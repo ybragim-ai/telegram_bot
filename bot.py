@@ -826,7 +826,28 @@ async def get_contact_info(update: Update, context):
     # Получаем ВСЕ данные из user_data
     user_data = context.user_data
     
-    # Сохраняем заявку в файл (ВСЕ данные)
+    # Формируем сообщение для админа
+    admin_message = (
+        "🚀 НОВАЯ ЗАЯВКА!\n"
+        "====================\n"
+        f"🏢 Бизнес: {user_data.get('business_name', 'Не указано')}\n"
+        f"📊 Сфера: {user_data.get('business_type', 'Не указано')}\n" 
+        f"🎯 Задача: {user_data.get('automation_goal', 'Не указано')}\n"
+        f"📞 Контакты: {user_data.get('contact_info', 'Не указано')}\n"
+        "===================="
+    )
+    
+    # Отправляем заявку админу (ЗАМЕНИ 123456789 на свой ID!)
+    try:
+        await context.bot.send_message(
+            chat_id=731452613,  # ⚠️ ЗАМЕНИ ЭТИ ЦИФРЫ на свой ID из шага 1!
+            text=admin_message
+        )
+        print("✅ Заявка отправлена админу!")
+    except Exception as e:
+        print(f"❌ Ошибка отправки админу: {e}")
+    
+    # Также сохраняем в лог (на всякий случай)
     print("="*50)
     print("НОВАЯ ЗАЯВКА:")
     print(f"Бизнес: {user_data.get('business_name', 'Не указано')}")
@@ -834,15 +855,6 @@ async def get_contact_info(update: Update, context):
     print(f"Задача: {user_data.get('automation_goal', 'Не указано')}")
     print(f"Контакты: {user_data.get('contact_info', 'Не указано')}")
     print("="*50)
-    
-    # Записываем ВСЕ данные в файл
-    with open("заявки.txt", "a", encoding="utf-8") as f:
-        f.write("="*50 + "\n")
-        f.write(f"Бизнес: {user_data.get('business_name', 'Не указано')}\n")
-        f.write(f"Сфера: {user_data.get('business_type', 'Не указано')}\n")
-        f.write(f"Задача: {user_data.get('automation_goal', 'Не указано')}\n")
-        f.write(f"Контакты: {user_data.get('contact_info', 'Не указано')}\n")
-        f.write("="*50 + "\n\n")
     
     await update.message.reply_text(
         "✅ Спасибо! Заявка принята!\n\n"
@@ -927,4 +939,5 @@ def main():
         print(f"❌ Ошибка: {e}")
 
 if __name__ == '__main__':
+
     main()
