@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 # Загружаем переменные из .env
 load_dotenv()
 
-
 # Настройка логирования
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
@@ -836,6 +835,15 @@ async def get_contact_info(update: Update, context):
     print(f"Контакты: {user_data.get('contact_info', 'Не указано')}")
     print("="*50)
     
+    # Записываем ВСЕ данные в файл
+    with open("заявки.txt", "a", encoding="utf-8") as f:
+        f.write("="*50 + "\n")
+        f.write(f"Бизнес: {user_data.get('business_name', 'Не указано')}\n")
+        f.write(f"Сфера: {user_data.get('business_type', 'Не указано')}\n")
+        f.write(f"Задача: {user_data.get('automation_goal', 'Не указано')}\n")
+        f.write(f"Контакты: {user_data.get('contact_info', 'Не указано')}\n")
+        f.write("="*50 + "\n\n")
+    
     await update.message.reply_text(
         "✅ Спасибо! Заявка принята!\n\n"
         "Наш менеджер свяжется с вами в течение 2 часов для бесплатной консультации "
@@ -849,6 +857,24 @@ async def get_contact_info(update: Update, context):
     )
     
     # Очищаем данные пользователя
+    context.user_data.clear()
+    return ConversationHandler.END
+
+# ========== НАВИГАЦИЯ ==========
+async def back_to_main(query):
+    await query.edit_message_text(
+        "👋 Главное меню. Выберите опцию:",
+        reply_markup=get_main_menu_keyboard()
+    )
+
+async def cancel_conversation(update: Update, context):
+    query = update.callback_query
+    
+    await query.edit_message_text(
+        '❌ Заявка отменена.',
+        reply_markup=get_main_menu_keyboard()
+    )
+    
     context.user_data.clear()
     return ConversationHandler.END
 
@@ -901,9 +927,4 @@ def main():
         print(f"❌ Ошибка: {e}")
 
 if __name__ == '__main__':
-
     main()
-
-
-
-
