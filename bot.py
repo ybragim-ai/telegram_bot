@@ -7,8 +7,11 @@ from dotenv import load_dotenv
 # Загружаем переменные из .env
 load_dotenv()
 
-# Твой ID в Telegram (замени на свои цифры из @userinfobot!)
-ADMIN_ID = 731452613  # ⚠️ ЗАМЕНИ эти цифры на свой ID!
+# Твой ID из @userinfobot
+ADMIN_ID = 731452613  # ⚠️ ЗАМЕНИ на свой ID!
+
+# Токен бота для оповещений (создай нового бота в @BotFather)
+NOTIFICATION_BOT_TOKEN = "8396663427:AAEOcCpSatEv5vQ1lX05q458tFKkV9MObMo"  # ⚠️ ЗАМЕНИ на реальный токен!
 
 # Настройка логирования
 logging.basicConfig(
@@ -840,13 +843,16 @@ async def get_contact_info(update: Update, context):
         "===================="
     )
     
-    # Отправляем заявку админу
+      # Отправляем заявку админу через ОТДЕЛЬНОГО бота
     try:
-        await context.bot.send_message(
-            chat_id=ADMIN_ID,  # ← Твой ID из переменной ADMIN_ID
+        # Создаем отдельное приложение для бота-оповещений
+        notification_app = Application.builder().token(NOTIFICATION_BOT_TOKEN).build()
+        
+        await notification_app.bot.send_message(
+            chat_id=ADMIN_ID,
             text=admin_message
         )
-        print("✅ Заявка отправлена админу в Telegram!")
+        print("✅ Заявка отправлена админу в личку!")
     except Exception as e:
         print(f"❌ Ошибка отправки админу: {e}")
     
@@ -953,4 +959,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
