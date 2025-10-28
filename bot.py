@@ -836,15 +836,6 @@ async def get_contact_info(update: Update, context):
     print(f"Контакты: {user_data.get('contact_info', 'Не указано')}")
     print("="*50)
     
-    # Записываем ВСЕ данные в файл
-    with open("заявки.txt", "a", encoding="utf-8") as f:
-        f.write("="*50 + "\n")
-        f.write(f"Бизнес: {user_data.get('business_name', 'Не указано')}\n")
-        f.write(f"Сфера: {user_data.get('business_type', 'Не указано')}\n")
-        f.write(f"Задача: {user_data.get('automation_goal', 'Не указано')}\n")
-        f.write(f"Контакты: {user_data.get('contact_info', 'Не указано')}\n")
-        f.write("="*50 + "\n\n")
-    
     await update.message.reply_text(
         "✅ Спасибо! Заявка принята!\n\n"
         "Наш менеджер свяжется с вами в течение 2 часов для бесплатной консультации "
@@ -912,6 +903,7 @@ def main():
 if __name__ == '__main__':
 
     main()
+
 
 
 
