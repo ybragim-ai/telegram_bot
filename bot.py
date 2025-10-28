@@ -823,66 +823,29 @@ async def get_automation_goal(update: Update, context):
     return CONTACT_INFO
 
 async def get_contact_info(update: Update, context):
-    # Сохраняем ответ в user_data
+    # Сохраняем ответ
     context.user_data['contact_info'] = update.message.text
-    
-    # Получаем ВСЕ данные из user_data
     user_data = context.user_data
-    
-    # 🔧 ИСПРАВЛЕННЫЙ БЛОК ОТПРАВКИ ОПОВЕЩЕНИЙ
-    admin_message = (
-        "🚀 НОВАЯ ЗАЯВКА!\n"
-        "====================\n"
-        f"🏢 Бизнес: {user_data.get('business_name', 'Не указано')}\n"
-        f"📊 Сфера: {user_data.get('business_type', 'Не указано')}\n" 
-        f"🎯 Задача: {user_data.get('automation_goal', 'Не указано')}\n"
-        f"📞 Контакты: {user_data.get('contact_info', 'Не указано')}\n"
-        "===================="
-    )
-    
-    # Отправляем заявку админу через ОСНОВНОГО бота (используем тот же токен)
+
+    # 🔔 Отправка админу
     try:
-        # Используем основной бот для отправки сообщения
         await context.bot.send_message(
             chat_id=ADMIN_ID,
-            text=admin_message
+            text=(
+                "🚀 НОВАЯ ЗАЯВКА!\n"
+                f"Бизнес: {user_data.get('business_name')}\n"
+                f"Сфера: {user_data.get('business_type')}\n"
+                f"Задача: {user_data.get('automation_goal')}\n"
+                f"Контакты: {user_data.get('contact_info')}"
+            )
         )
-        print("✅ Заявка отправлена админу в Telegram!")
+        print("✅ Оповещение админу отправлено!")
     except Exception as e:
         print(f"❌ Ошибка отправки админу: {e}")
-    
-    # 🔧 ДАЛЕЕ ИДЕТ ТВОЙ СТАРЫЙ РАБОЧИЙ КОД (без изменений)
-    # Сохраняем заявку в файл (ВСЕ данные)
-    print("="*50)
-    print("НОВАЯ ЗАЯВКА:")
-    print(f"Бизнес: {user_data.get('business_name', 'Не указано')}")
-    print(f"Сфера: {user_data.get('business_type', 'Не указано')}") 
-    print(f"Задача: {user_data.get('automation_goal', 'Не указано')}")
-    print(f"Контакты: {user_data.get('contact_info', 'Не указано')}")
-    print("="*50)
-    
-    # Записываем ВСЕ данные в файл
-    with open("заявки.txt", "a", encoding="utf-8") as f:
-        f.write("="*50 + "\n")
-        f.write(f"Бизнес: {user_data.get('business_name', 'Не указано')}\n")
-        f.write(f"Сфера: {user_data.get('business_type', 'Не указано')}\n")
-        f.write(f"Задача: {user_data.get('automation_goal', 'Не указано')}\n")
-        f.write(f"Контакты: {user_data.get('contact_info', 'Не указано')}\n")
-        f.write("="*50 + "\n\n")
-    
-    await update.message.reply_text(
-        "✅ Спасибо! Заявка принята!\n\n"
-        "Наш менеджер свяжется с вами в течение 2 часов для бесплатной консультации "
-        "и расчета точной стоимости.\n\n"
-        "А пока посмотрите демо-версии ботов 👇",
-        reply_markup=InlineKeyboardMarkup([
-            [InlineKeyboardButton("🤖 Демо-боты", callback_data='demo_bots')],
-            [InlineKeyboardButton("📞 Связаться сейчас", callback_data='contacts')],
-            [InlineKeyboardButton("🏠 В главное меню", callback_data='back_to_main')]
-        ])
-    )
-    
-    # Очищаем данные пользователя
+
+    # Подтверждение пользователю
+    await update.message.reply_text("✅ Заявка принята! Админ уведомлен.")
+
     context.user_data.clear()
     return ConversationHandler.END
 
@@ -954,3 +917,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
