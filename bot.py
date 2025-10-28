@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 
 # Загружаем переменные из .env
 load_dotenv()
+# Твой ID в Telegram (замени на свои цифры!)
+ADMIN_ID = 731452613  # ⚠️ ЗАМЕНИ на свой ID из @userinfobot
 
 # Настройка логирования
 logging.basicConfig(
@@ -837,10 +839,10 @@ async def get_contact_info(update: Update, context):
         "===================="
     )
     
-    # Отправляем заявку админу (ЗАМЕНИ 123456789 на свой ID!)
+    # Отправляем заявку админу
     try:
         await context.bot.send_message(
-            chat_id=731452613,  # ⚠️ ЗАМЕНИ ЭТИ ЦИФРЫ на свой ID из шага 1!
+            chat_id=ADMIN_ID,  # ← ИСПОЛЬЗУЕМ ПЕРЕМЕННУЮ ADMIN_ID
             text=admin_message
         )
         print("✅ Заявка отправлена админу!")
@@ -869,24 +871,6 @@ async def get_contact_info(update: Update, context):
     )
     
     # Очищаем данные пользователя
-    context.user_data.clear()
-    return ConversationHandler.END
-
-# ========== НАВИГАЦИЯ ==========
-async def back_to_main(query):
-    await query.edit_message_text(
-        "👋 Главное меню. Выберите опцию:",
-        reply_markup=get_main_menu_keyboard()
-    )
-
-async def cancel_conversation(update: Update, context):
-    query = update.callback_query
-    
-    await query.edit_message_text(
-        '❌ Заявка отменена.',
-        reply_markup=get_main_menu_keyboard()
-    )
-    
     context.user_data.clear()
     return ConversationHandler.END
 
@@ -941,3 +925,4 @@ def main():
 if __name__ == '__main__':
 
     main()
+
