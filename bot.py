@@ -822,7 +822,7 @@ async def get_automation_goal(update: Update, context):
     )
     return CONTACT_INFO
 
-async def get_contact_info(update: Update, context):
+def get_contact_info(update, context):
     # Сохраняем ответ пользователя
     context.user_data['contact_info'] = update.message.text
     user_data = context.user_data
@@ -841,7 +841,7 @@ async def get_contact_info(update: Update, context):
     # ✅ Отправка уведомления админу в личку
     ADMIN_ID = 731452613  # твой ID из @userinfobot
     try:
-        await context.bot.send_message(chat_id=ADMIN_ID, text=admin_message)
+        context.bot.send_message(chat_id=ADMIN_ID, text=admin_message)
         print("✅ Заявка отправлена админу в личку Telegram!")
     except Exception as e:
         print(f"❌ Ошибка отправки админу: {e}")
@@ -856,7 +856,7 @@ async def get_contact_info(update: Update, context):
         f.write("="*50 + "\n\n")
 
     # 🔹 Ответ пользователю
-    await update.message.reply_text(
+    update.message.reply_text(
         "✅ Спасибо! Заявка принята!\n\n"
         "Наш менеджер свяжется с вами в течение 2 часов для бесплатной консультации "
         "и расчета точной стоимости.\n\n"
@@ -871,6 +871,7 @@ async def get_contact_info(update: Update, context):
     # 🔹 Очищаем данные пользователя
     context.user_data.clear()
     return ConversationHandler.END
+
 
 def main():
     BOT_TOKEN = os.getenv('BOT_TOKEN')
@@ -914,5 +915,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
