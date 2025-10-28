@@ -823,55 +823,52 @@ async def get_automation_goal(update: Update, context):
     return CONTACT_INFO
 
 async def get_contact_info(update: Update, context):
-    # Сохраняем ответ
+    # Сохраняем ответ пользователя
     context.user_data['contact_info'] = update.message.text
     user_data = context.user_data
 
-    # 🔔 Отправка админу
+    # 🔔 Формируем уведомление для админа
+    admin_message = (
+        "🚀 НОВАЯ ЗАЯВКА!\n"
+        "====================\n"
+        f"🏢 Бизнес: {user_data.get('business_name', 'Не указано')}\n"
+        f"📊 Сфера: {user_data.get('business_type', 'Не указано')}\n"
+        f"🎯 Задача: {user_data.get('automation_goal', 'Не указано')}\n"
+        f"📞 Контакты: {user_data.get('contact_info', 'Не указано')}\n"
+        "===================="
+    )
+
+    # ✅ Отправка уведомления админу в личку
+    ADMIN_ID = 731452613  # твой ID из @userinfobot
     try:
-        await context.bot.send_message(
-            chat_id=ADMIN_ID,
-            text=(
-                "🚀 НОВАЯ ЗАЯВКА!\n"
-                f"Бизнес: {user_data.get('business_name')}\n"
-                f"Сфера: {user_data.get('business_type')}\n"
-                f"Задача: {user_data.get('automation_goal')}\n"
-                f"Контакты: {user_data.get('contact_info')}"
-            )
-        )
-        print("✅ Оповещение админу отправлено!")
+        await context.bot.send_message(chat_id=ADMIN_ID, text=admin_message)
+        print("✅ Заявка отправлена админу в личку Telegram!")
     except Exception as e:
         print(f"❌ Ошибка отправки админу: {e}")
 
-    # Подтверждение пользователю
-    await update.message.reply_text("✅ Заявка принята! Админ уведомлен.")
+    # 🔹 Сохраняем заявку в файл
+    with open("заявки.txt", "a", encoding="utf-8") as f:
+        f.write("="*50 + "\n")
+        f.write(f"Бизнес: {user_data.get('business_name', 'Не указано')}\n")
+        f.write(f"Сфера: {user_data.get('business_type', 'Не указано')}\n")
+        f.write(f"Задача: {user_data.get('automation_goal', 'Не указано')}\n")
+        f.write(f"Контакты: {user_data.get('contact_info', 'Не указано')}\n")
+        f.write("="*50 + "\n\n")
 
-    context.user_data.clear()
-    return ConversationHandler.END
-
-# ========== НАВИГАЦИЯ ==========
-async def back_to_main(query):
-    await query.edit_message_text(
-        "👋 Главное меню. Выберите опцию:",
-        reply_markup=get_main_menu_keyboard()
-    )
-
-async def cancel_conversation(update: Update, context):
-    query = update.callback_query
-    
-    await query.edit_message_text(
-        '❌ Заявка отменена.',
-        reply_markup=get_main_menu_keyboard()
-    )
-    
-    context.user_data.clear()
-    return ConversationHandler.END
-
-async def cancel_command(update: Update, context):
+    # 🔹 Ответ пользователю
     await update.message.reply_text(
-        '❌ Заявка отменена.',
-        reply_markup=get_main_menu_keyboard()
+        "✅ Спасибо! Заявка принята!\n\n"
+        "Наш менеджер свяжется с вами в течение 2 часов для бесплатной консультации "
+        "и расчета точной стоимости.\n\n"
+        "А пока посмотрите демо-версии ботов 👇",
+        reply_markup=InlineKeyboardMarkup([
+            [InlineKeyboardButton("🤖 Демо-боты", callback_data='demo_bots')],
+            [InlineKeyboardButton("📞 Связаться сейчас", callback_data='contacts')],
+            [InlineKeyboardButton("🏠 В главное меню", callback_data='back_to_main')]
+        ])
     )
+
+    # 🔹 Очищаем данные пользователя
     context.user_data.clear()
     return ConversationHandler.END
 
@@ -917,4 +914,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
