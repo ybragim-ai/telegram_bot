@@ -6,8 +6,7 @@ from dotenv import load_dotenv
 
 # Загружаем переменные из .env
 load_dotenv()
-# Твой ID в Telegram (замени на свои цифры!)
-ADMIN_ID = 731452613  # ⚠️ ЗАМЕНИ на свой ID из @userinfobot
+
 
 # Настройка логирования
 logging.basicConfig(
@@ -913,5 +912,6 @@ def main():
 if __name__ == '__main__':
 
     main()
+
 
 
